@@ -8,15 +8,6 @@ pipeline {
     }
 
     stages {
-        stage (' Install git') {
-            steps {
-                sh '''
-                    sudo apt update -y
-                    sudo apt upgrade -y
-                    sudo apt install git -y
-                '''
-            }
-        }
         stage('Check and Install Maven') {
             steps {
                 script {
