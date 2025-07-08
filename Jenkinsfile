@@ -7,6 +7,11 @@ pipeline {
         IMAGE_TAG = "latest"
     }
 
+    tools {
+        maven 'Maven 3.8.5'
+    }
+
+
     stages {
         stage('Check and Install Maven') {
             steps {
