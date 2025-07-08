@@ -7,31 +7,22 @@ pipeline {
         IMAGE_TAG = "latest"
     }
 
-    tools {
-        maven 'Maven 3.8.5'
-        jdk 'JDK 17'
-    }
-
-    stages {
-        stage('Install Maven') {
+    stage('Check and Install Maven') {
             steps {
-                sh '''
-                if ! command -v mvn &> /dev/null
-                then
-                echo "Maven not found. Installing Maven..."
-                wget https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz
-                // tar -xzf apache-maven-${MAVEN_VERSION}-bin.tar.gz
-                // sudo mv apache-maven-${MAVEN_VERSION} /opt/maven
-                // echo "export M2_HOME=/opt/maven" >> ~/.bashrc
-                // echo "export PATH=$M2_HOME/bin:$PATH" >> ~/.bashrc
-                // source ~/.bashrc
-                else
-                    echo "Maven is already installed."
-                fi
-                '''
+                script {
+                    def mavenInstalled = sh(script: 'which mvn', returnStatus: true) == 0
+                    if (mavenInstalled) {
+                        echo "Maven is already installed. Skipping installation."
+                    } else {
+                        echo "Maven not found. Proceeding with installation..."
+                        sh '''
+                            chmod +x maven.sh
+                            ./maven.sh
+                        '''
+                    }
+                }
             }
         }
-
 
         stages {
             stage('Checkout') {
