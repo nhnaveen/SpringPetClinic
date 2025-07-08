@@ -24,56 +24,57 @@ pipeline {
                 }
             }
         }
-
-        stages {
-            stage('Checkout') {
-                steps {
-                    git url: 'https://github.com/nhnaveen/SpringPetClinic.git', branch: 'main'
-                }
-            }
-
-            stage('Build with Maven') {
-                steps {
-                    sh 'mvn clean install'
-                }
-            }
-
-            stage('Build Docker Image') {
-                steps {
-                    sh 'docker build -t your-app .'
-                    sh 'docker tag your-app:latest ${ECR_REPO}:${IMAGE_TAG}'
-                }
-            }
-
-            stage('Push to Amazon ECR') {
-                steps {
-                    sh '''
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
-                        docker push ${ECR_REPO}:${IMAGE_TAG}
-                    '''
-                }
-            }
-
-            stage('Deploy to ECS') {
-                steps {
-                    sh '''
-                        aws ecs update-service \
-                        --cluster my-java-cluster \
-                        --service petclinic-service \
-                        --force-new-deployment \
-                        --region ${AWS_REGION}
-                    '''
-                }
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/nhnaveen/SpringPetClinic.git', branch: 'main'
             }
         }
 
-        post {
-            success {
-                echo 'Deployment successful!'
+        stage('Build with Maven') {
+            steps {
+                sh 'mvn clean install'
             }
-            failure {
-                echo 'Deployment failed.'
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t your-app .'
+                sh 'docker tag your-app:latest ${ECR_REPO}:${IMAGE_TAG}'
+            }
+        }
+
+        stage('Push to Amazon ECR') {
+            steps {
+                sh '''
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
+                    docker push ${ECR_REPO}:${IMAGE_TAG}
+                '''
+            }
+        }
+
+        stage('Deploy to ECS') {
+            steps {
+                sh '''
+                    aws ecs update-service \
+                    --cluster my-java-cluster \
+                    --service petclinic-service \
+                    --force-new-deployment \
+                    --region ${AWS_REGION}
+                '''
             }
         }
     }
+    post {
+        always {
+            echo 'Cleaning up...'
+            sh 'docker rmi ${ECR_REPO}:${IMAGE_TAG} || true'
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
 }
+// Note: Ensure that the AWS CLI is configured with the necessary permissions to access ECR and ECS.
