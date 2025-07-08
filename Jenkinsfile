@@ -8,6 +8,15 @@ pipeline {
     }
 
     stages {
+        stage (' Install git') {
+            steps {
+                sh '''
+                    sudo apt update -y
+                    sudo apt upgrade -y
+                    sudo apt install git -y
+                '''
+            }
+        }
         stage('Check and Install Maven') {
             steps {
                 script {
@@ -22,6 +31,18 @@ pipeline {
                         '''
                     }
                 }
+            }
+        }
+
+        stage (' Install docker') {
+            steps {
+                sh '''
+                    sudo apt update -y
+                    sudo apt install docker.io -y
+                    sudo systemctl start docker
+                    sudo systemctl enable docker
+                    sudo usermod -aG docker ubuntu
+                '''
             }
         }
         stage('Checkout') {
