@@ -7,7 +7,8 @@ pipeline {
         IMAGE_TAG = "latest"
     }
 
-    stage('Check and Install Maven') {
+    stages {
+        stage('Check and Install Maven') {
             steps {
                 script {
                     def mavenInstalled = sh(script: 'which mvn', returnStatus: true) == 0
