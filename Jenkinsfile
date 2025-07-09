@@ -56,7 +56,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t your-app .'
-                sh 'docker tag your-app:latest ${ECR_REPO}:${IMAGE_TAG}'
+                sh 'docker tag petclinic:latest ${ECR_REPO}:${IMAGE_TAG}'
             }
         }
 
