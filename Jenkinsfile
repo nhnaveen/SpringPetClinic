@@ -84,7 +84,7 @@ pipeline {
     post {
        always {
             echo 'Cleaning up...'
-            sh 'docker rmi ${ECR_REPO} || true'
+            sh 'docker rmi 047719614391.dkr.ecr.${AWS_REGION}.amazonaws.com || true'
         }
         success {
             echo 'Pipeline completed successfully!'
