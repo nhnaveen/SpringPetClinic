@@ -84,7 +84,7 @@ pipeline {
     post {
        always {
             echo 'Cleaning up...'
-            sh 'docker rmi ${ECR_REPO}:${IMAGE_TAG} || true'
+            sh 'docker rmi ${ECR_REPO} || true'
         }
         success {
             echo 'Pipeline completed successfully!'
