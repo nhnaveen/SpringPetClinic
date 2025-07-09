@@ -57,7 +57,7 @@ pipeline {
             steps {
                 sh '''
                     docker build -t petclinic .
-                    docker tag petclinic:latest ${ECR_REPO}:${IMAGE_TAG}'
+                    docker tag petclinic:latest ${ECR_REPO}:${IMAGE_TAG}
                 '''
             }
         }
