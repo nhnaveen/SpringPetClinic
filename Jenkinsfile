@@ -7,16 +7,11 @@ pipeline {
         IMAGE_TAG = "latest"
     }
 
+    tools {
+        maven 'Maven 3.8.5'
+    }
+
     stages {
-        stage (' Install git') {
-            steps {
-                sh '''
-                    sudo apt update -y
-                    sudo apt upgrade -y
-                    sudo apt install git -y
-                '''
-            }
-        }
         stage('Check and Install Maven') {
             steps {
                 script {
