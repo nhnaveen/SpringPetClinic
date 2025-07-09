@@ -62,8 +62,9 @@ pipeline {
         stage('Push to Amazon ECR') {
             steps {
                 sh '''
-                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 047719614391.dkr.ecr.${AWS_REGION}.amazonaws.com
-                    docker push ${ECR_REPO}:${IMAGE_TAG}
+                    aws ecr get-login-password --region ${AWS_REGION} | \
+                    docker login --username AWS --password-stdin 047719614391.dkr.ecr.${AWS_REGION}.amazonaws.com
+                    docker push 047719614391.dkr.ecr.${AWS_REGION}.amazonaws.com/petclinic:latest
                 '''
             }
         }
@@ -80,17 +81,17 @@ pipeline {
             }
         }
     }
-    post {
-        always {
-            echo 'Cleaning up...'
-            sh 'docker rmi ${ECR_REPO}:${IMAGE_TAG} || true'
-        }
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
+//    post {
+//       always {
+//            echo 'Cleaning up...'
+//            sh 'docker rmi ${ECR_REPO}:${IMAGE_TAG} || true'
+//        }
+//        success {
+//            echo 'Pipeline completed successfully!'
+//        }
+//        failure {
+//            echo 'Pipeline failed!'
+//        }
+//    }
 }
 // Note: Ensure that the AWS CLI is configured with the necessary permissions to access ECR and ECS.
