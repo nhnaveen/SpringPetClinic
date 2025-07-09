@@ -81,17 +81,17 @@ pipeline {
             }
         }
     }
-//    post {
-//       always {
-//            echo 'Cleaning up...'
-//            sh 'docker rmi ${ECR_REPO}:${IMAGE_TAG} || true'
-//        }
-//        success {
-//            echo 'Pipeline completed successfully!'
-//        }
-//        failure {
-//            echo 'Pipeline failed!'
-//        }
-//    }
+    post {
+       always {
+            echo 'Cleaning up...'
+            sh 'docker rmi ${ECR_REPO}:${IMAGE_TAG} || true'
+        }
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
 }
 // Note: Ensure that the AWS CLI is configured with the necessary permissions to access ECR and ECS.
