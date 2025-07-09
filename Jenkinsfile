@@ -55,7 +55,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t petclinic .'
-                sh 'docker tag petclinic:latest ${ECR_REPO}:${IMAGE_TAG}'
+                sh 'docker tag petclinic:latest 047719614391.dkr.ecr.${AWS_REGION}.amazonaws.com/petclinic:latest'
             }
         }
 
