@@ -73,7 +73,7 @@ pipeline {
             steps {
                 sh '''
                     aws ecs update-service \
-                    --cluster petclonic-cluster \
+                    --cluster petclinic-cluster \
                     --service petclinic-service \
                     --force-new-deployment \
                     --region ${AWS_REGION}
