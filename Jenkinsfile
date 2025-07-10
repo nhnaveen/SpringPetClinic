@@ -29,17 +29,95 @@ pipeline {
             }
         }
 
-        stage (' Install docker') {
+        stage('Check and Install Docker') {
             steps {
-                sh '''
-                    sudo apt update -y
-                    sudo apt install docker.io -y
-                    sudo systemctl start docker
-                    sudo systemctl enable docker
-                    sudo usermod -aG docker ubuntu
-                '''
+                script {
+                    def dockerInstalled = sh(script: 'which docker', returnStatus: true) == 0
+                    if (mavenInstalled) {
+                        echo "Docker is already installed. Skipping installation."
+                    } else {
+                        echo "Docker not found. Proceeding with installation..."
+                        sh '''
+                            sudo apt update -y
+                            sudo apt install docker.io -y
+                            sudo systemctl start docker
+                            sudo systemctl enable docker
+                            sudo usermod -aG docker ubuntu
+                        '''
+                    }
+                }
             }
         }
+
+        stage('Check and Install AWS CLI') {
+            steps {
+                script {
+                    def awsCliInstalled = sh(script: 'which aws', returnStatus: true) == 0
+                    if (awsCliInstalled) {
+                        echo "AWS CLI is already installed. Skipping installation."
+                    } else {
+                        echo "AWS CLI not found. Proceeding with installation..."
+                        sh '''
+                            sudo apt update -y
+                            sudo apt install awscli -y
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Configure AWS CLI') {
+            steps {
+                script {
+                    def awsConfigured = sh(script: 'aws sts get-caller-identity', returnStatus: true) == 0
+                    if (awsConfigured) {
+                        echo "AWS CLI is already configured. Skipping configuration."
+                    } else {
+                        echo "Configuring AWS CLI..."
+                        sh '''
+                            aws configure set aws_access_key_id YOUR_ACCESS_KEY_ID
+                            aws configure set aws_secret_access_key YOUR_SECRET_ACCESS_KEY
+                            aws configure set default.region ${AWS_REGION}
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Check and Install Git') {
+            steps {
+                script {
+                    def gitInstalled = sh(script: 'which git', returnStatus: true) == 0
+                    if (gitInstalled) {
+                        echo "Git is already installed. Skipping installation."
+                    } else {
+                        echo "Git not found. Proceeding with installation..."
+                        sh '''
+                            sudo apt update -y
+                            sudo apt install git -y
+                        '''
+                    }
+                }
+            }
+        }
+
+        stage('Check and Install Java') {
+            steps {
+                script {
+                    def javaInstalled = sh(script: 'java -version', returnStatus: true) == 0
+                    if (javaInstalled) {
+                        echo "Java is already installed. Skipping installation."
+                    } else {
+                        echo "Java not found. Proceeding with installation..."
+                        sh '''
+                            sudo apt update -y
+                            sudo apt install openjdk-11-jdk -y
+                        '''
+                    }
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 git url: 'https://github.com/nhnaveen/SpringPetClinic.git', branch: 'main'
@@ -81,6 +159,7 @@ pipeline {
             }
         }
     }
+    
     post {
        always {
             echo 'Cleaning up...'
